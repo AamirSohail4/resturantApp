@@ -1,0 +1,26 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Raleway', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    
+    /* Pak Punjab Logo Color Scheme */
+    --color-pak-green: #1B5E20;
+    --color-pak-green-light: #2E7D32;
+    --color-pak-green-dark: #0D4F1C;
+    --color-pak-gold: #D4AF37;
+    --color-pak-gold-dark: #B8860B;
+    --color-pak-red: #E31E24;
+    --color-pak-cream: #FAF9F6;
+    --color-pak-cream-alt: #FFFEF7;
+}
+
+/* Apply Raleway font globally */
+body {
+    font-family: 'Raleway', sans-serif;
+}

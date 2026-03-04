@@ -1,0 +1,13 @@
+<?php
+
+// This file was previously used for automatic WhatsApp Cloud API messages.
+// The user requested to remove all auto WhatsApp message configuration,
+// so the controller has been disabled.
+
+namespace App\Http\Controllers;
+
+class WhatsAppController extends Controller
+{
+    // Intentionally left empty. Auto WhatsApp confirmation is disabled.
+}
+
