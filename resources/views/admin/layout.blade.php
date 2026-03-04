@@ -10,6 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Fallback to CDN Tailwind CSS for production (always load as backup) -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             font-family: 'Raleway', sans-serif;
@@ -36,7 +38,7 @@
                              class="w-full h-full object-contain">
                     </div>
                     <div>
-                        <h1 class="text-base sm:text-lg font-bold">Admin Panel</h1>
+                        <h1 class="text-sm sm:text-base font-semibold">Admin Panel</h1>
                         <p class="text-xs text-gray-300 hidden sm:block">Pak Punjab</p>
                     </div>
                 </div>
@@ -54,7 +56,7 @@
                     <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                     </svg>
-                    <span class="font-medium text-sm sm:text-base">Dashboard</span>
+                    <span class="text-sm font-normal">Dashboard</span>
                 </a>
 
                 <a href="{{ route('admin.products.index') }}"
@@ -62,7 +64,7 @@
                     <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                     </svg>
-                    <span class="font-medium text-sm sm:text-base">Products</span>
+                    <span class="text-sm font-normal">Products</span>
                 </a>
 
                 <a href="{{ route('admin.categories.index') }}"
@@ -70,7 +72,7 @@
                     <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                     </svg>
-                    <span class="font-medium text-sm sm:text-base">Categories</span>
+                    <span class="text-sm font-normal">Categories</span>
                 </a>
 
                 <a href="{{ route('admin.users.index') }}"
@@ -78,7 +80,7 @@
                     <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                     </svg>
-                    <span class="font-medium text-sm sm:text-base">Users</span>
+                    <span class="text-sm font-normal">Users</span>
                 </a>
 
                 <div class="pt-4 border-t border-[#1B5E20]">
@@ -87,7 +89,7 @@
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
-                        <span class="font-medium text-sm sm:text-base">Back to Site</span>
+                        <span class="text-sm font-normal">Back to Site</span>
                     </a>
                 </div>
             </nav>
@@ -105,27 +107,27 @@
                     <div class="flex-1 lg:hidden"></div>
                     
                     <!-- Heading (Centered on mobile, left-aligned on desktop) -->
-                    <h2 class="flex-1 text-center lg:text-left lg:flex-none text-xl sm:text-2xl font-bold text-gray-800">@yield('page-title', 'Dashboard')</h2>
+                    <h2 class="flex-1 text-center lg:text-left lg:flex-none text-lg sm:text-xl font-semibold text-gray-800">@yield('page-title', 'Dashboard')</h2>
                     
                     <!-- User Info & Logout (Right side) -->
                     <div class="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
                         <div class="flex items-center space-x-2 sm:space-x-3">
                             <div class="text-right hidden sm:block">
-                                <p class="text-sm font-medium text-gray-900">{{ Auth::user()->name }}</p>
+                                <p class="text-xs font-normal text-gray-900">{{ Auth::user()->name }}</p>
                                 <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
                             </div>
-                            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-[#1B5E20] rounded-full flex items-center justify-center text-white font-semibold text-sm sm:text-base">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-[#1B5E20] rounded-full flex items-center justify-center text-white font-medium text-xs sm:text-sm">
                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                             </div>
                         </div>
                         <form action="{{ route('admin.logout') }}" method="POST" class="inline">
                             @csrf
                             <button type="submit"
-                                    class="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200">
-                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    class="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                                 </svg>
-                                <span class="font-medium text-sm sm:text-base">Logout</span>
+                                <span class="font-normal text-xs sm:text-sm">Logout</span>
                             </button>
                         </form>
                     </div>

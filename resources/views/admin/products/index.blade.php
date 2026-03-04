@@ -7,15 +7,16 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
         <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Products</h1>
-            <p class="text-sm sm:text-base text-gray-600 mt-1">Manage your restaurant products</p>
+            <h1 class="text-lg sm:text-xl font-semibold text-gray-900">Products</h1>
+            <p class="text-xs sm:text-sm text-gray-600 mt-1">Manage your restaurant products</p>
         </div>
         <a href="{{ route('admin.products.create') }}" 
-           class="w-full sm:w-auto bg-[#1B5E20] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-[#0D4F1C] transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+           class="w-auto bg-[#1B5E20] text-white px-3 py-1.5 sm:px-5 sm:py-2 rounded-lg font-medium text-xs sm:text-sm hover:bg-[#0D4F1C] transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center space-x-1.5 sm:space-x-2 active:scale-95">
+            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
-            <span>Add New Product</span>
+            <span class="hidden sm:inline">Add New Product</span>
+            <span class="sm:hidden">Add</span>
         </a>
     </div>
 
@@ -47,25 +48,25 @@
                                 </div>
                                 @endif
                                 <div>
-                                    <div class="text-xs sm:text-sm font-medium text-gray-900">{{ $product->name }}</div>
+                                    <div class="text-xs sm:text-sm font-normal text-gray-900">{{ $product->name }}</div>
                                     @if($product->name_ar)
-                                    <div class="text-xs sm:text-sm text-gray-500">{{ $product->name_ar }}</div>
+                                    <div class="text-xs text-gray-500">{{ $product->name_ar }}</div>
                                     @endif
                                 </div>
                             </div>
                         </td>
                         <td class="px-3 sm:px-6 py-2.5 whitespace-nowrap">
-                            <span class="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">{{ $product->category->name }}</span>
+                            <span class="px-2 py-0.5 text-xs font-normal bg-blue-100 text-blue-800 rounded-full">{{ $product->category->name }}</span>
                         </td>
-                        <td class="px-3 sm:px-6 py-2.5 whitespace-nowrap text-xs sm:text-sm font-semibold text-gray-900">
+                        <td class="px-3 sm:px-6 py-2.5 whitespace-nowrap text-xs sm:text-sm font-normal text-gray-900">
                             {{ $product->price }} {{ $product->currency }}
                         </td>
                         <td class="px-3 sm:px-6 py-2.5 whitespace-nowrap">
-                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full {{ $product->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            <span class="px-2 py-0.5 text-xs font-medium rounded-full {{ $product->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                 {{ $product->is_active ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
-                        <td class="px-3 sm:px-6 py-2.5 whitespace-nowrap text-right text-sm font-medium">
+                        <td class="px-3 sm:px-6 py-2.5 whitespace-nowrap text-right text-xs sm:text-sm">
                             <div class="flex items-center justify-end space-x-1.5 sm:space-x-2">
                                 <a href="{{ route('admin.products.edit', $product) }}"
                                    class="text-[#1B5E20] hover:text-[#0D4F1C] transition-colors p-1">

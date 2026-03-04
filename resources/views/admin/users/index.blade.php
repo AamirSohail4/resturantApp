@@ -7,15 +7,16 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
         <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Users</h1>
-            <p class="text-sm sm:text-base text-gray-600 mt-1">Manage admin users</p>
+            <h1 class="text-lg sm:text-xl font-semibold text-gray-900">Users</h1>
+            <p class="text-xs sm:text-sm text-gray-600 mt-1">Manage admin users</p>
         </div>
         <a href="{{ route('admin.users.create') }}" 
-           class="w-full sm:w-auto bg-[#1B5E20] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-[#0D4F1C] transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+           class="w-auto bg-[#1B5E20] text-white px-3 py-1.5 sm:px-5 sm:py-2 rounded-lg font-medium text-xs sm:text-sm hover:bg-[#0D4F1C] transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center space-x-1.5 sm:space-x-2 active:scale-95">
+            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
-            <span>Add New User</span>
+            <span class="hidden sm:inline">Add New User</span>
+            <span class="sm:hidden">Add</span>
         </a>
     </div>
 
@@ -36,13 +37,13 @@
                     <tr class="hover:bg-gray-50 transition-colors">
                         <td class="px-3 sm:px-6 py-3 sm:py-4">
                             <div class="flex items-center">
-                                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-[#1B5E20] rounded-full flex items-center justify-center text-white font-semibold text-xs sm:text-sm mr-2 sm:mr-3 flex-shrink-0">
+                                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-[#1B5E20] rounded-full flex items-center justify-center text-white font-medium text-xs sm:text-sm mr-2 sm:mr-3 flex-shrink-0">
                                     {{ strtoupper(substr($user->name, 0, 1)) }}
                                 </div>
                                 <div class="min-w-0">
-                                    <div class="text-xs sm:text-sm font-medium text-gray-900 truncate">{{ $user->name }}</div>
+                                    <div class="text-xs sm:text-sm font-normal text-gray-900 truncate">{{ $user->name }}</div>
                                     @if($user->id === auth()->id())
-                                    <span class="text-xs text-[#1B5E20] font-medium">(You)</span>
+                                    <span class="text-xs text-[#1B5E20] font-normal">(You)</span>
                                     @endif
                                 </div>
                             </div>

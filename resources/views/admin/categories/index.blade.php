@@ -7,15 +7,16 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
         <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Categories</h1>
-            <p class="text-sm sm:text-base text-gray-600 mt-1">Manage product categories</p>
+            <h1 class="text-lg sm:text-xl font-semibold text-gray-900">Categories</h1>
+            <p class="text-xs sm:text-sm text-gray-600 mt-1">Manage product categories</p>
         </div>
         <a href="{{ route('admin.categories.create') }}" 
-           class="w-full sm:w-auto bg-[#1B5E20] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-[#0D4F1C] transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+           class="w-auto bg-[#1B5E20] text-white px-3 py-1.5 sm:px-5 sm:py-2 rounded-lg font-medium text-xs sm:text-sm hover:bg-[#0D4F1C] transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center space-x-1.5 sm:space-x-2 active:scale-95">
+            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
-            <span>Add New Category</span>
+            <span class="hidden sm:inline">Add New Category</span>
+            <span class="sm:hidden">Add</span>
         </a>
     </div>
 
@@ -25,12 +26,12 @@
         <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 border-l-4 border-[#1B5E20] hover:shadow-lg transition-shadow">
             <div class="flex items-start justify-between mb-3 sm:mb-4">
                 <div class="flex-1 min-w-0">
-                    <h3 class="text-lg sm:text-xl font-bold text-gray-900 truncate">{{ $category->name }}</h3>
+                    <h3 class="text-sm sm:text-base font-medium text-gray-900 truncate">{{ $category->name }}</h3>
                     @if($category->name_ar)
-                    <p class="text-xs sm:text-sm text-gray-600 mt-1 truncate">{{ $category->name_ar }}</p>
+                    <p class="text-xs text-gray-600 mt-1 truncate">{{ $category->name_ar }}</p>
                     @endif
                 </div>
-                <span class="px-2 py-1 text-xs font-semibold rounded-full flex-shrink-0 ml-2 {{ $category->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                <span class="px-2 py-1 text-xs font-medium rounded-full flex-shrink-0 ml-2 {{ $category->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                     {{ $category->is_active ? 'Active' : 'Inactive' }}
                 </span>
             </div>

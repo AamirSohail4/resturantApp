@@ -13,8 +13,8 @@
                      class="w-full h-full object-contain">
             </div>
             <div class="text-center">
-                <h1 class="text-3xl font-bold text-[#1B5E20]">Pak Punjab Restaurant</h1>
-                <p class="text-gray-600 mt-1">Admin Dashboard</p>
+                <h1 class="text-xl sm:text-2xl font-semibold text-[#1B5E20]">Pak Punjab Restaurant</h1>
+                <p class="text-sm text-gray-600 mt-1">Admin Dashboard</p>
             </div>
         </div>
     </div>
@@ -23,8 +23,8 @@
         <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-[#1B5E20]">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-gray-600 text-sm font-medium">Total Products</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-2">{{ $stats['total_products'] }}</p>
+                    <p class="text-gray-600 text-xs font-normal">Total Products</p>
+                    <p class="text-2xl font-semibold text-gray-900 mt-1">{{ $stats['total_products'] }}</p>
                 </div>
                 <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                     <svg class="w-6 h-6 text-[#1B5E20]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -37,8 +37,8 @@
         <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-[#D4AF37]">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-gray-600 text-sm font-medium">Active Products</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-2">{{ $stats['active_products'] }}</p>
+                    <p class="text-gray-600 text-xs font-normal">Active Products</p>
+                    <p class="text-2xl font-semibold text-gray-900 mt-1">{{ $stats['active_products'] }}</p>
                 </div>
                 <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
                     <svg class="w-6 h-6 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,8 +51,8 @@
         <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-gray-600 text-sm font-medium">Total Categories</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-2">{{ $stats['total_categories'] }}</p>
+                    <p class="text-gray-600 text-xs font-normal">Total Categories</p>
+                    <p class="text-2xl font-semibold text-gray-900 mt-1">{{ $stats['total_categories'] }}</p>
                 </div>
                 <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                     <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,8 +65,8 @@
         <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-gray-600 text-sm font-medium">Active Categories</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-2">{{ $stats['active_categories'] }}</p>
+                    <p class="text-gray-600 text-xs font-normal">Active Categories</p>
+                    <p class="text-2xl font-semibold text-gray-900 mt-1">{{ $stats['active_categories'] }}</p>
                 </div>
                 <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
                     <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,8 +80,8 @@
     <!-- Recent Products -->
     <div class="bg-white rounded-lg shadow-md p-6">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-bold text-gray-900">Recent Products</h3>
-            <a href="{{ route('admin.products.index') }}" class="text-[#1B5E20] hover:text-[#0D4F1C] font-medium text-sm">View All →</a>
+            <h3 class="text-base font-semibold text-gray-900">Recent Products</h3>
+            <a href="{{ route('admin.products.index') }}" class="text-[#1B5E20] hover:text-[#0D4F1C] font-normal text-xs">View All →</a>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full">
@@ -96,11 +96,11 @@
                 <tbody class="divide-y divide-gray-200">
                     @forelse($recent_products as $product)
                     <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $product->name }}</td>
-                        <td class="px-4 py-3 text-sm text-gray-600">{{ $product->category->name }}</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">{{ $product->price }} {{ $product->currency }}</td>
+                        <td class="px-4 py-3 text-xs font-normal text-gray-900">{{ $product->name }}</td>
+                        <td class="px-4 py-3 text-xs text-gray-600">{{ $product->category->name }}</td>
+                        <td class="px-4 py-3 text-xs text-gray-900">{{ $product->price }} {{ $product->currency }}</td>
                         <td class="px-4 py-3">
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $product->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full {{ $product->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                 {{ $product->is_active ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
@@ -118,20 +118,20 @@
     <!-- Recent Categories -->
     <div class="bg-white rounded-lg shadow-md p-6">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-bold text-gray-900">Recent Categories</h3>
-            <a href="{{ route('admin.categories.index') }}" class="text-[#1B5E20] hover:text-[#0D4F1C] font-medium text-sm">View All →</a>
+            <h3 class="text-base font-semibold text-gray-900">Recent Categories</h3>
+            <a href="{{ route('admin.categories.index') }}" class="text-[#1B5E20] hover:text-[#0D4F1C] font-normal text-xs">View All →</a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             @forelse($recent_categories as $category)
             <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center justify-between">
-                    <h4 class="font-semibold text-gray-900">{{ $category->name }}</h4>
-                    <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $category->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                    <h4 class="text-sm font-medium text-gray-900">{{ $category->name }}</h4>
+                    <span class="px-2 py-1 text-xs font-medium rounded-full {{ $category->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                         {{ $category->is_active ? 'Active' : 'Inactive' }}
                     </span>
                 </div>
                 @if($category->description)
-                <p class="text-sm text-gray-600 mt-2">{{ Str::limit($category->description, 50) }}</p>
+                <p class="text-xs text-gray-600 mt-2">{{ Str::limit($category->description, 50) }}</p>
                 @endif
             </div>
             @empty
