@@ -83,8 +83,24 @@ class ProductController extends Controller
         // Handle image upload
         if ($request->hasFile('image')) {
             // Delete old image if exists
-            if ($product->image && Storage::disk('public')->exists(str_replace('storage/', '', $product->image))) {
-                Storage::disk('public')->delete(str_replace('storage/', '', $product->image));
+            if ($product->image) {
+                $oldImagePath = $product->image;
+                
+                // Remove 'storage/' prefix if present
+                if (strpos($oldImagePath, 'storage/') === 0) {
+                    $oldImagePath = str_replace('storage/', '', $oldImagePath);
+                }
+                
+                // Try to delete from storage
+                if (Storage::disk('public')->exists($oldImagePath)) {
+                    Storage::disk('public')->delete($oldImagePath);
+                }
+                
+                // Also try to delete from public directory if it exists there
+                $publicPath = public_path($product->image);
+                if (file_exists($publicPath) && is_file($publicPath)) {
+                    @unlink($publicPath);
+                }
             }
 
             $image = $request->file('image');
@@ -104,9 +120,25 @@ class ProductController extends Controller
 
     public function destroy(Request $request, Product $product)
     {
-        // Delete image if exists
-        if ($product->image && Storage::disk('public')->exists(str_replace('storage/', '', $product->image))) {
-            Storage::disk('public')->delete(str_replace('storage/', '', $product->image));
+        // Delete image if exists - handle different path formats
+        if ($product->image) {
+            $imagePath = $product->image;
+            
+            // Remove 'storage/' prefix if present
+            if (strpos($imagePath, 'storage/') === 0) {
+                $imagePath = str_replace('storage/', '', $imagePath);
+            }
+            
+            // Try to delete from storage
+            if (Storage::disk('public')->exists($imagePath)) {
+                Storage::disk('public')->delete($imagePath);
+            }
+            
+            // Also try to delete from public directory if it exists there
+            $publicPath = public_path($product->image);
+            if (file_exists($publicPath) && is_file($publicPath)) {
+                @unlink($publicPath);
+            }
         }
 
         $product->delete();
