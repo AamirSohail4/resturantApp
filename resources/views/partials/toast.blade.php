@@ -27,39 +27,40 @@
 </div>
 
 <script>
-// Toast Notification System
+// Toast Notification System - Matches showCartNotification style
 function showToast(message, type = 'success', duration = 3000) {
-    const container = document.getElementById('toast-container');
-    if (!container) return;
-    
-    const toast = document.createElement('div');
+    // Match the exact style of showCartNotification from welcome.blade.php
     const bgColor = type === 'error' ? 'bg-red-600' : type === 'warning' ? 'bg-yellow-500' : 'bg-[#1B5E20]';
-    const iconPath = type === 'error' 
-        ? 'M6 18L18 6M6 6l12 12' 
-        : type === 'warning'
-        ? 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'
-        : 'M5 13l4 4L19 7';
-    
-    toast.className = `${bgColor} text-white px-4 sm:px-6 py-3 sm:py-4 rounded-lg shadow-lg z-50 flex items-center space-x-3 animate-slide-in pointer-events-auto min-w-[280px] sm:min-w-[320px] max-w-[90vw]`;
-    toast.innerHTML = `
-        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${iconPath}"></path>
+    const notification = document.createElement('div');
+    // Use same positioning as cart notification (top-14 right-4) with higher z-index for admin
+    notification.className = `fixed top-14 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-[9999] flex items-center space-x-3`;
+    notification.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+    notification.style.opacity = '0';
+    notification.style.transform = 'translateX(100%)';
+    notification.innerHTML = `
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${type === 'error' ? 'M6 18L18 6M6 6l12 12' : type === 'warning' ? 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' : 'M5 13l4 4L19 7'}"></path>
         </svg>
-        <span class="flex-1 text-sm sm:text-base">${message}</span>
-        <button onclick="this.parentElement.remove()" class="text-white hover:text-gray-200 flex-shrink-0">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-        </button>
+        <span>${message}</span>
     `;
     
-    container.appendChild(toast);
+    document.body.appendChild(notification);
     
-    // Auto remove after duration
+    // Animate in immediately
+    requestAnimationFrame(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateX(0)';
+    });
+    
+    // Remove notification after duration (default 3 seconds, same as cart)
     setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(100%)';
-        setTimeout(() => toast.remove(), 300);
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 300);
     }, duration);
 }
 

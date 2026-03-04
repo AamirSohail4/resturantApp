@@ -48,15 +48,29 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                         </svg>
                     </a>
-                    <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="inline" id="delete-category-form-{{ $category->id }}">
-                        @csrf
-                        @method('DELETE')
-                        <button type="button" onclick="confirmDeleteCategory({{ $category->id }}, '{{ addslashes($category->name) }}')" class="text-red-600 hover:text-red-800 transition-colors p-1">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                    </form>
+                    <div class="relative">
+                        <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="inline" id="delete-category-form-{{ $category->id }}">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" onclick="showDeleteConfirmation({{ $category->id }}, '{{ addslashes($category->name) }}', this)" class="text-red-600 hover:text-red-800 transition-colors p-1 relative">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </form>
+                        <!-- Inline Delete Confirmation -->
+                        <div id="delete-confirm-{{ $category->id }}" class="hidden absolute right-0 top-full mt-2 z-50 bg-white rounded-lg shadow-xl border border-gray-200 p-3 min-w-[200px] sm:min-w-[240px] animate-fade-in">
+                            <p class="text-sm text-gray-700 mb-3">Delete "{{ $category->name }}"?</p>
+                            <div class="flex items-center justify-end space-x-2">
+                                <button onclick="closeDeleteConfirmation({{ $category->id }})" class="px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
+                                    Cancel
+                                </button>
+                                <button onclick="confirmDeleteCategory({{ $category->id }}, '{{ addslashes($category->name) }}')" class="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700 text-white rounded-md font-medium transition-colors">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -87,43 +101,122 @@
 </div>
 
 <script>
-function confirmDeleteCategory(categoryId, categoryName) {
-    showConfirmModal(
-        `Are you sure you want to delete "${categoryName}"? This action cannot be undone.`,
-        function() {
-            const form = document.getElementById('delete-category-form-' + categoryId);
-            const formData = new FormData(form);
-            
-            fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+let activeDeleteConfirm = null;
+
+function showDeleteConfirmation(categoryId, categoryName, button) {
+    // Close any other open confirmations
+    if (activeDeleteConfirm && activeDeleteConfirm !== categoryId) {
+        closeDeleteConfirmation(activeDeleteConfirm);
+    }
+    
+    const confirmDiv = document.getElementById('delete-confirm-' + categoryId);
+    if (confirmDiv) {
+        confirmDiv.classList.remove('hidden');
+        activeDeleteConfirm = categoryId;
+        
+        // Close on outside click
+        setTimeout(() => {
+            document.addEventListener('click', function closeOnOutsideClick(e) {
+                if (!confirmDiv.contains(e.target) && e.target !== button) {
+                    closeDeleteConfirmation(categoryId);
+                    document.removeEventListener('click', closeOnOutsideClick);
                 }
-            })
-            .then(response => {
-                if (response.redirected) {
-                    window.location.href = response.url;
-                } else {
-                    return response.json();
-                }
-            })
-            .then(data => {
-                if (data && data.success) {
-                    showToast('Category deleted successfully', 'success');
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    showToast('Failed to delete category', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // Fallback to form submit
-                form.submit();
             });
-        },
-        'Delete Category'
-    );
+        }, 10);
+    }
+}
+
+function closeDeleteConfirmation(categoryId) {
+    const confirmDiv = document.getElementById('delete-confirm-' + categoryId);
+    if (confirmDiv) {
+        confirmDiv.classList.add('hidden');
+        if (activeDeleteConfirm === categoryId) {
+            activeDeleteConfirm = null;
+        }
+    }
+}
+
+function confirmDeleteCategory(categoryId, categoryName) {
+    closeDeleteConfirmation(categoryId);
+    
+    const form = document.getElementById('delete-category-form-' + categoryId);
+    const formData = new FormData(form);
+    
+    // Show loading state
+    const card = form.closest('.bg-white');
+    if (card) {
+        card.style.opacity = '0.5';
+        card.style.pointerEvents = 'none';
+    }
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (response.redirected) {
+            window.location.href = response.url;
+        } else {
+            return response.json();
+        }
+    })
+    .then(data => {
+        if (data && data.success) {
+            // Show toast immediately (same as cart)
+            showToast('Category deleted successfully', 'success');
+            
+            // Animate card removal
+            if (card) {
+                card.style.transition = 'opacity 0.3s, transform 0.3s';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    card.remove();
+                }, 300);
+            } else {
+                setTimeout(() => location.reload(), 1000);
+            }
+        } else {
+            if (card) {
+                card.style.opacity = '1';
+                card.style.pointerEvents = 'auto';
+            }
+            showToast('Failed to delete category', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        if (card) {
+            card.style.opacity = '1';
+            card.style.pointerEvents = 'auto';
+        }
+        form.submit();
+    });
+}
+
+// Add fade-in animation
+if (!document.getElementById('delete-confirm-styles')) {
+    const style = document.createElement('style');
+    style.id = 'delete-confirm-styles';
+    style.textContent = `
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.2s ease-out;
+        }
+    `;
+    document.head.appendChild(style);
 }
 </script>
 @endsection

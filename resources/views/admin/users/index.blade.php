@@ -62,15 +62,29 @@
                                     </svg>
                                 </a>
                                 @if($user->id !== auth()->id())
-                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline" id="delete-user-form-{{ $user->id }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button" onclick="confirmDeleteUser({{ $user->id }}, '{{ addslashes($user->name) }}')" class="text-red-600 hover:text-red-800 transition-colors p-1">
-                                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
-                                </form>
+                                <div class="relative">
+                                    <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline" id="delete-user-form-{{ $user->id }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" onclick="showDeleteConfirmation({{ $user->id }}, '{{ addslashes($user->name) }}', this)" class="text-red-600 hover:text-red-800 transition-colors p-1 relative">
+                                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                    <!-- Inline Delete Confirmation -->
+                                    <div id="delete-confirm-{{ $user->id }}" class="hidden absolute right-0 top-full mt-2 z-50 bg-white rounded-lg shadow-xl border border-gray-200 p-3 min-w-[200px] sm:min-w-[240px] animate-fade-in">
+                                        <p class="text-sm text-gray-700 mb-3">Delete "{{ $user->name }}"?</p>
+                                        <div class="flex items-center justify-end space-x-2">
+                                            <button onclick="closeDeleteConfirmation({{ $user->id }})" class="px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
+                                                Cancel
+                                            </button>
+                                            <button onclick="confirmDeleteUser({{ $user->id }}, '{{ addslashes($user->name) }}')" class="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700 text-white rounded-md font-medium transition-colors">
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                                 @endif
                             </div>
                         </td>
@@ -107,43 +121,122 @@
 </div>
 
 <script>
-function confirmDeleteUser(userId, userName) {
-    showConfirmModal(
-        `Are you sure you want to delete "${userName}"? This action cannot be undone.`,
-        function() {
-            const form = document.getElementById('delete-user-form-' + userId);
-            const formData = new FormData(form);
-            
-            fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+let activeDeleteConfirm = null;
+
+function showDeleteConfirmation(userId, userName, button) {
+    // Close any other open confirmations
+    if (activeDeleteConfirm && activeDeleteConfirm !== userId) {
+        closeDeleteConfirmation(activeDeleteConfirm);
+    }
+    
+    const confirmDiv = document.getElementById('delete-confirm-' + userId);
+    if (confirmDiv) {
+        confirmDiv.classList.remove('hidden');
+        activeDeleteConfirm = userId;
+        
+        // Close on outside click
+        setTimeout(() => {
+            document.addEventListener('click', function closeOnOutsideClick(e) {
+                if (!confirmDiv.contains(e.target) && e.target !== button) {
+                    closeDeleteConfirmation(userId);
+                    document.removeEventListener('click', closeOnOutsideClick);
                 }
-            })
-            .then(response => {
-                if (response.redirected) {
-                    window.location.href = response.url;
-                } else {
-                    return response.json();
-                }
-            })
-            .then(data => {
-                if (data && data.success) {
-                    showToast('User deleted successfully', 'success');
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    showToast('Failed to delete user', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // Fallback to form submit
-                form.submit();
             });
-        },
-        'Delete User'
-    );
+        }, 10);
+    }
+}
+
+function closeDeleteConfirmation(userId) {
+    const confirmDiv = document.getElementById('delete-confirm-' + userId);
+    if (confirmDiv) {
+        confirmDiv.classList.add('hidden');
+        if (activeDeleteConfirm === userId) {
+            activeDeleteConfirm = null;
+        }
+    }
+}
+
+function confirmDeleteUser(userId, userName) {
+    closeDeleteConfirmation(userId);
+    
+    const form = document.getElementById('delete-user-form-' + userId);
+    const formData = new FormData(form);
+    
+    // Show loading state
+    const row = form.closest('tr');
+    if (row) {
+        row.style.opacity = '0.5';
+        row.style.pointerEvents = 'none';
+    }
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (response.redirected) {
+            window.location.href = response.url;
+        } else {
+            return response.json();
+        }
+    })
+    .then(data => {
+        if (data && data.success) {
+            // Show toast immediately (same as cart)
+            showToast('User deleted successfully', 'success');
+            
+            // Animate row removal
+            if (row) {
+                row.style.transition = 'opacity 0.3s, transform 0.3s';
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(-20px)';
+                setTimeout(() => {
+                    row.remove();
+                }, 300);
+            } else {
+                setTimeout(() => location.reload(), 1000);
+            }
+        } else {
+            if (row) {
+                row.style.opacity = '1';
+                row.style.pointerEvents = 'auto';
+            }
+            showToast('Failed to delete user', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        if (row) {
+            row.style.opacity = '1';
+            row.style.pointerEvents = 'auto';
+        }
+        form.submit();
+    });
+}
+
+// Add fade-in animation
+if (!document.getElementById('delete-confirm-styles')) {
+    const style = document.createElement('style');
+    style.id = 'delete-confirm-styles';
+    style.textContent = `
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.2s ease-out;
+        }
+    `;
+    document.head.appendChild(style);
 }
 </script>
 @endsection

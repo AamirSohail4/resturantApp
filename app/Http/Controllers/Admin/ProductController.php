@@ -102,7 +102,7 @@ class ProductController extends Controller
             ->with('success', 'Product updated successfully!');
     }
 
-    public function destroy(Product $product)
+    public function destroy(Request $request, Product $product)
     {
         // Delete image if exists
         if ($product->image && Storage::disk('public')->exists(str_replace('storage/', '', $product->image))) {
@@ -110,6 +110,14 @@ class ProductController extends Controller
         }
 
         $product->delete();
+
+        // Return JSON for AJAX requests
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Product deleted successfully'
+            ]);
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Product deleted successfully!');

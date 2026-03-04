@@ -55,12 +55,26 @@
                     </div>
 
                     <!-- Remove Button -->
-                    <button onclick="removeItem({{ $item['id'] }})" 
-                            class="mt-2 sm:mt-0 p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors flex-shrink-0 self-end sm:self-auto">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                        </svg>
-                    </button>
+                    <div class="relative mt-2 sm:mt-0 flex-shrink-0 self-end sm:self-auto">
+                        <button onclick="showRemoveConfirmation({{ $item['id'] }}, '{{ addslashes($item['name']) }}', this)" 
+                                class="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                        <!-- Inline Remove Confirmation -->
+                        <div id="remove-confirm-{{ $item['id'] }}" class="hidden absolute right-0 top-full mt-2 z-50 bg-white rounded-lg shadow-xl border border-gray-200 p-3 min-w-[200px] sm:min-w-[240px] animate-fade-in">
+                            <p class="text-sm text-gray-700 mb-3">Remove "{{ $item['name'] }}" from cart?</p>
+                            <div class="flex items-center justify-end space-x-2">
+                                <button onclick="closeRemoveConfirmation({{ $item['id'] }})" class="px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
+                                    Cancel
+                                </button>
+                                <button onclick="confirmRemoveItem({{ $item['id'] }}, '{{ addslashes($item['name']) }}')" class="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700 text-white rounded-md font-medium transition-colors">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 @endforeach
             </div>
@@ -150,41 +164,114 @@ function updateQuantity(productId, change) {
     });
 }
 
-function removeItem(productId) {
-    showConfirmModal(
-        'Are you sure you want to remove this item?',
-        function() {
-            fetch(`/cart/remove/${productId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+let activeRemoveConfirm = null;
+
+function showRemoveConfirmation(productId, itemName, button) {
+    // Close any other open confirmations
+    if (activeRemoveConfirm && activeRemoveConfirm !== productId) {
+        closeRemoveConfirmation(activeRemoveConfirm);
+    }
+    
+    const confirmDiv = document.getElementById('remove-confirm-' + productId);
+    if (confirmDiv) {
+        confirmDiv.classList.remove('hidden');
+        activeRemoveConfirm = productId;
+        
+        // Close on outside click
+        setTimeout(() => {
+            document.addEventListener('click', function closeOnOutsideClick(e) {
+                if (!confirmDiv.contains(e.target) && e.target !== button) {
+                    closeRemoveConfirmation(productId);
+                    document.removeEventListener('click', closeOnOutsideClick);
                 }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const item = document.querySelector(`.cart-item[data-product-id="${productId}"]`);
-                    item.remove();
-                    
-                    showToast('Item removed from cart', 'success');
-                    
-                    if (data.cart_count === 0) {
-                        location.reload();
-                    } else {
-                        document.querySelector('.total-amount').textContent = data.total.toFixed(2) + ' AED';
-                        updateCartCount(data.cart_count);
-                    }
-                } else {
-                    showToast('Failed to remove item', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('Failed to remove item', 'error');
             });
-        },
-        'Remove Item'
-    );
+        }, 10);
+    }
+}
+
+function closeRemoveConfirmation(productId) {
+    const confirmDiv = document.getElementById('remove-confirm-' + productId);
+    if (confirmDiv) {
+        confirmDiv.classList.add('hidden');
+        if (activeRemoveConfirm === productId) {
+            activeRemoveConfirm = null;
+        }
+    }
+}
+
+function confirmRemoveItem(productId, itemName) {
+    closeRemoveConfirmation(productId);
+    
+    const item = document.querySelector(`.cart-item[data-product-id="${productId}"]`);
+    if (!item) return;
+    
+    // Show loading state
+    item.style.opacity = '0.5';
+    item.style.pointerEvents = 'none';
+    
+    // Delete from server
+    fetch(`/cart/remove/${productId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Animate item removal
+            item.style.transition = 'opacity 0.3s, transform 0.3s';
+            item.style.opacity = '0';
+            item.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+                item.remove();
+                
+                // Show toast notification (same style as "item added to cart")
+                showToast('Item removed from cart', 'success');
+                
+                if (data.cart_count === 0) {
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    document.querySelector('.total-amount').textContent = data.total.toFixed(2) + ' AED';
+                    updateCartCount(data.cart_count);
+                }
+            }, 300);
+        } else {
+            // Restore item if deletion failed
+            item.style.opacity = '1';
+            item.style.pointerEvents = 'auto';
+            showToast('Failed to remove item', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        item.style.opacity = '1';
+        item.style.pointerEvents = 'auto';
+        showToast('Failed to remove item', 'error');
+    });
+}
+
+// Add fade-in animation for confirmation popup
+if (!document.getElementById('remove-confirm-styles')) {
+    const style = document.createElement('style');
+    style.id = 'remove-confirm-styles';
+    style.textContent = `
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.2s ease-out;
+        }
+    `;
+    document.head.appendChild(style);
 }
 
 function updateCartCount(count) {
